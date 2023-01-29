@@ -1,0 +1,173 @@
+openapi: 3.0.1
+info:
+  version: 1.0.0
+  title: Warehouse API
+  description: ReSTful API to manage the warehouse.
+servers:
+  - url: "https://example.com/warehouse/v1"
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+  parameters:
+    ProductName:
+      name: product-name
+      in: path
+      required: true
+      description:
+        Name of product to target
+      schema:
+        type: string
+
+  schemas:
+    ArticleObject:
+      type: object
+      required:
+        - art_id
+        - name
+        - stock
+      properties:
+        art_id:
+          type: integer
+          description: The id of the article
+        name:
+          type: string
+          description: The name of the article
+        stock:
+          type: integer
+          description: The quantity of the article
+    ProductComponentObject:
+      type: object
+      required:
+        - art_id
+        - amount_of
+      properties:
+        art_id:
+          type: integer
+          description: The id of the article needed for the product
+        amount_of:
+          type: integer
+          description: The quantity of the article pieces needed for the product
+    ProductObject:
+      type: object
+      required:
+        - name
+        - contain_articles
+      properties:
+        name:
+          type: string
+          description: The name of the product
+        price:
+          type: integer
+        availability:
+          type: string
+          description: the number of pieces available according to the remaining inventory articles in the warehouse
+        contain_articles:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProductComponentObject"
+          description: The list of articles that compose the product
+    ArticleList:
+      type: array
+      nullable: true
+      items:
+        $ref: "#/components/schemas/ArticleObject"
+    ProductsList:
+      type: array
+      nullable: true
+      items:
+        $ref: "#/components/schemas/ProductObject"
+
+security:
+  - BearerAuth: [ ]
+paths:
+  /inventory:
+    get:
+      tags:
+        - Inventory operations
+      description: (NOT IMPLEMENTED) Retrieves the current inventory of the warehouse.
+      responses:
+        200:
+          description: OK, The list of invetory is returned.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ArticleList"
+        400:
+          description: Bad Request
+        401:
+          description: Unauthorized, missing authentication credentials
+        403:
+          description: Forbidden, not enough permissions
+        500:
+          description: Internal server error
+    post:
+      tags:
+        - Inventory operations
+      description: (NOT IMPLEMENTED) Save the list of the articles in the warehouse database.
+      responses:
+        200:
+          description: OK, The list of articles is saved.
+        400:
+          description: Bad Request
+        401:
+          description: Unauthorized, missing authentication credentials
+        403:
+          description: Forbidden, not enough permissions
+        500:
+          description: Internal server error
+  /products:
+    get:
+      tags:
+        - Products operations
+      description: Retrieves the list of all the products in the warehouse.
+      responses:
+        200:
+          description: |
+            OK, The list of prducts is returned.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductsList"
+        400:
+          description: Bad Request
+        401:
+          description: Unauthorized, missing authentication credentials
+        403:
+          description: Forbidden, not enough permissions
+        500:
+          description: Internal server error
+    post:
+      tags:
+        - Products operations
+      description: (NOT IMPLEMENTED) Save the list of the products in the warehouse database.
+      responses:
+        200:
+          description: OK, The list of prducts is saved.
+        400:
+          description: Bad Request
+        401:
+          description: Unauthorized, missing authentication credentials
+        403:
+          description: Forbidden, not enough permissions
+        500:
+          description: Internal server error
+  /products/{product-name}/sell:
+    put:
+      tags:
+        - Products operations
+      description: Removes (sell) from the warehouse the related product <b>updating all the underlying inventory</b>
+      parameters:
+        - $ref: "#/components/parameters/ProductName"
+      responses:
+         200:
+           description: OK, the product was sold correctly, the inventory quantities has been changed accordingly.
+         400:
+           description: Bad Request
+         401:
+           description: Unauthorized, missing authentication credentials
+         403:
+           description: Forbidden, not enough permissions
+         500:
+           description: Internal server error
