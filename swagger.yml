@@ -4,7 +4,7 @@ info:
   title: Warehouse API
   description: ReSTful API to manage the warehouse.
 servers:
-  - url: "https://example.com/warehouse/v1"
+  - url: "https://localhost:3000/api/v1"
 components:
   securitySchemes:
     BearerAuth:
